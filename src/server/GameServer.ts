@@ -1,17 +1,21 @@
 import * as express from 'express'
 import * as ws from 'ws'
 import * as serveStatic from 'serve-static';
-import { Room } from './GameRoom.js'
+import { RoomManager } from './RoomManager.js';
 
 export type ClientData = {
-
+    socket: ws,
+    name: string,
+    currentRoom: string
 }
 
-class GameServer {
+export class GameServer {
     gameServerExpress: express.Express = express()
     wsServer: ws.Server     
 
-    rooms: Map<String, Room> = new Map()
+    roomManager: RoomManager
+
+    socketToClientDataMap: Map<ws, ClientData> = new Map()
 
     constructor() {
         this.gameServerExpress.use(serveStatic('./htodcs/'))
@@ -22,10 +26,6 @@ class GameServer {
 
         let that = this;
 
-        /**
-         * To open a websocket connection a client send a http upgrade-request to the http-server.
-         * The http-server then passes the underlying tcp-connection to the websocket server.
-         */
         server.on('upgrade', (request, socket, head) => {
             that.wsServer.handleUpgrade(request, socket, head, socket => {
 
@@ -41,13 +41,26 @@ class GameServer {
 
             });
         });    
+
+        this.roomManager = new RoomManager(this)
     }
 
     onWebSocketConnect(socket: ws) {
-
+        this.socketToClientDataMap.set(socket, {
+            socket: socket,
+            name: null,
+            currentRoom: null
+        })
+        console.log("Neuer Spieler connected")
     }
+    
+    onWebSocketClientMessage(socket: ws, messageJson: ws.Data) {
+        let message = JSON.parse(<string> messageJson)
+        let clientData: ClientData = this.socketToClientDataMap.get(socket)
 
-    onWebSocketClientMessage(socket: ws, message: ws.Data) {
+        switch(message.type) {
+
+        }
 
     }
 
