@@ -1,4 +1,4 @@
-import { Board } from "./Board.js"
+import { Board, Field } from "./Board.js"
 
 export class StartScene extends Phaser.Scene {
     constructor() {
@@ -14,6 +14,6 @@ export class StartScene extends Phaser.Scene {
 
     create() {
         let text = this.add.text(100, 100, "Chess")
-        new Board(this)    
+        new Board(this)
     }
 }
