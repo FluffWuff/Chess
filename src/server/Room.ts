@@ -4,6 +4,8 @@ export class Room {
     
     clients: [ClientData, ClientData]
 
+    boardInformation: string
+
     constructor(public host: ClientData, public sessionID: string) {
 
     }

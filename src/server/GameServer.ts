@@ -2,6 +2,7 @@ import * as express from 'express'
 import * as ws from 'ws'
 import * as serveStatic from 'serve-static';
 import { RoomManager } from './RoomManager.js';
+import { ClientMessageNewClient, ServerMessage } from '../data/Data.js';
 
 export type ClientData = {
     socket: ws,
@@ -59,13 +60,33 @@ export class GameServer {
         let clientData: ClientData = this.socketToClientDataMap.get(socket)
 
         switch(message.type) {
-
+            case "newClient":
+                clientData = {
+                    socket: socket,
+                    name: message.name,
+                    currentRoom: null
+                }
+                this.socketToClientDataMap.set(socket, clientData)
+                break
+            case "newRoom":
+                let roomID = this.roomManager.createRoom(clientData)
+                clientData.currentRoom = roomID
+                this.sendMessageToClient(socket, {
+                    type: "newRoom",
+                    roomID: roomID
+                })
+                break
         }
 
     }
 
     onWebSocketClientClosed(socket: ws) {
 
+    }
+
+    sendMessageToClient(client: ws, message: ServerMessage) {
+        let messageAsJson = JSON.stringify(message)
+        client.send(messageAsJson)
     }
 
 }
