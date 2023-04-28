@@ -3,3 +3,23 @@
     margin: 0;
     background-color: white ;
 }
+
+#container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#game {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#inputDiv {
+    position: absolute;
+    left: 200px;
+    top: 200px;
+}

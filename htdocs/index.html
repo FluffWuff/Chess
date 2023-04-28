@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
@@ -9,13 +10,19 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.24.0/dist/phaser.js"></script>
     <script src='js/App.js' type="module"></script>
 </head>
+
 <body>
-    <div class="username">
-        <input type="text" placeholder="username" id="username" name="username">
+    <div id="container">
+        <div class="game"></div>
+        <div id="inputDiv">
+            <div class="Username">
+                <input type="text" placeholder="Username" id="username" name="username">
+            </div>
+            <div class="Room code">
+                <input type="text" placeholder="Room code" id="roomCode" name="roomCode">
+            </div>
+        </div>
     </div>
-    <div class="roomCode">
-        <input type="text" placeholder="roomCode" id="roomCode" name="roomCode">
-    </div>
-    <div class="game"></div>
 </body>
+
 </html>
