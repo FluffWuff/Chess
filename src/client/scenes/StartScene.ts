@@ -1,3 +1,5 @@
+import { Board, Field } from "./Board.js"
+
 export class StartScene extends Phaser.Scene {
     constructor() {
         super({
@@ -11,6 +13,7 @@ export class StartScene extends Phaser.Scene {
     }
 
     create() {
-        let text = this.add.text(100, 100, "Chess")        
+        let text = this.add.text(100, 100, "Chess")
+        new Board(this)
     }
 }
