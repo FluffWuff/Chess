@@ -1,4 +1,4 @@
-export type ClientMessage = ClientMessageNewClient | ClientMessageSendChessMove | ClientMessageNewRoom
+export type ClientMessage = ClientMessageNewClient | ClientMessageSendChessMove | ClientMessageNewRoom | ClientMessageEnterRoomCode
 
 export type ClientMessageNewClient = {
     type: "newClient",
@@ -16,9 +16,13 @@ export type ClientMessageSendChessMove = {
     move: string
 }
 
+export type ClientMessageEnterRoomCode = {
+    type: "enterRoomCode",
+    roomID: string
+}
 
 //
-export type ServerMessage = ServerMessageNewClient | ServerMessageSendChessMove | ServerMessageNewRoom
+export type ServerMessage = ServerMessageNewClient | ServerMessageSendChessMove | ServerMessageNewRoom | ServerMessageInvalidRoomCode | ServerMessageStartingGame
 
 export type ServerMessageNewClient = {
     type: "newClient",
@@ -33,4 +37,15 @@ export type ServerMessageSendChessMove = {
 export type ServerMessageNewRoom = {
     type: "newRoom",
     roomID: string
+}
+
+export type ServerMessageInvalidRoomCode = {
+    type: "invalidRoomCode",
+    roomID: string
+}
+
+export type ServerMessageStartingGame = {
+    type: "startingGame",
+    clientName: string,
+
 }

@@ -3,7 +3,7 @@ import { Room } from "./Room.js";
 
 export class RoomManager {
 
-    rooms: Map<String, Room> = new Map<String, Room>()
+    private rooms: Map<String, Room> = new Map<String, Room>()
 
     constructor(gameServer: GameServer) {
 
@@ -22,6 +22,10 @@ export class RoomManager {
 
     }
 
+    getRoom(roomID: string): Room {
+        return this.rooms.get(roomID)
+    }
+
     private generateRoomID(): string {
         let outString: string = '';
         let inOptions: string = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -29,6 +33,5 @@ export class RoomManager {
           outString += inOptions.charAt(Math.floor(Math.random() * inOptions.length));
         return outString;
     }
-
 
 }

@@ -12,7 +12,7 @@ export type ClientData = {
 
 export class GameServer {
     gameServerExpress: express.Express = express()
-    wsServer: ws.Server     
+    wsServer: ws.Server
 
     roomManager: RoomManager
 
@@ -41,7 +41,7 @@ export class GameServer {
                 })
 
             });
-        });    
+        });
 
         this.roomManager = new RoomManager(this)
     }
@@ -54,12 +54,12 @@ export class GameServer {
         })
         console.log("Neuer Spieler connected")
     }
-    
+
     onWebSocketClientMessage(socket: ws, messageJson: ws.Data) {
-        let message = JSON.parse(<string> messageJson)
+        let message = JSON.parse(<string>messageJson)
         let clientData: ClientData = this.socketToClientDataMap.get(socket)
 
-        switch(message.type) {
+        switch (message.type) {
             case "newClient":
                 clientData = {
                     socket: socket,
@@ -76,6 +76,26 @@ export class GameServer {
                     roomID: roomID
                 })
                 break
+            case "enterRoomCode":
+                let room = this.roomManager.getRoom(message.roomID)
+                if(typeof room == undefined) { //RoomCode is invalid
+                    this.sendMessageToClient(socket, {
+                        type: "invalidRoomCode",
+                        roomID: message.roomID
+                    })
+                    break
+                }
+                clientData.currentRoom = message.roomID
+                room.clients[1] = clientData
+                this.sendMessageToClient(socket, {
+                    type: "startingGame",
+                    clientName: room.host.name
+                })
+                this.sendMessageToClient(room.host.socket, {
+                    type: "startingGame",
+                    clientName: clientData.name
+                })
+                break
         }
 
     }
@@ -88,6 +108,8 @@ export class GameServer {
         let messageAsJson = JSON.stringify(message)
         client.send(messageAsJson)
     }
+
+
 
 }
 

@@ -6,8 +6,9 @@ export class Room {
 
     boardInformation: string
 
-    constructor(public host: ClientData, public sessionID: string) {
-
+    constructor(public host: ClientData, public roomID: string) {
+        this.clients = [host, undefined]
+        
     }
 
 }
