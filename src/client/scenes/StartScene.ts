@@ -14,7 +14,8 @@ export class StartScene extends Phaser.Scene implements HoverListener {
 
     create() {
         let text = this.add.text(100, 100, "Chess")
-        new Board(this)
+        let board = new Board(this)
+        
     }
     
     onOver(field: Field) {
@@ -24,5 +25,7 @@ export class StartScene extends Phaser.Scene implements HoverListener {
 }
 
 interface HoverListener {
-    onOver(field: Field)
+    onOver(field: Field)   
 }
+
+

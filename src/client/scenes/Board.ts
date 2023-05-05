@@ -6,9 +6,9 @@ export class Board {
         for (let i = 0; i < 8; i++) {
             this.fieldList[i] = []
             for (let n = 0; n < 8; n++) {
-                let color: number = 0x555555
+                let color: Phaser.Display.Color = new Phaser.Display.Color(255, 255, 255)
                 if ((n % 2 == 0 || i % 2 != 0) && (i % 2 == 0 || n % 2 != 0)) {
-                    color = 0xffffff
+                    color = new Phaser.Display.Color(0,0,0)
                 }
                 this.fieldList[i][n] = new Field((1920/2)-(4*128) + i * 128, 100 + n * 128, scene, color)
             }
@@ -26,9 +26,9 @@ export class Field {
     yPos: number
     square: Phaser.GameObjects.Rectangle
 
-    constructor(xPos: number, yPos: number, scene: StartScene, color: number) {
+    constructor(xPos: number, yPos: number, scene: StartScene, color: Phaser.Display.Color) {
         let square = scene.add.rectangle(xPos, yPos, 128, 128)
-        square.setFillStyle(color)
+        square.setFillStyle()
         this.scene = scene
         this.xPos = xPos
         this.yPos = yPos
@@ -39,6 +39,6 @@ export class Field {
         })
 
     }
-
   }
+
 
