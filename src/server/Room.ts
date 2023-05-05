@@ -4,7 +4,7 @@ export class Room {
     
     clients: [ClientData, ClientData]
 
-    boardInformation: string
+    moves: string[] =  []
 
     constructor(public host: ClientData, public roomID: string) {
         this.clients = [host, undefined]

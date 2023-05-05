@@ -2,7 +2,7 @@ import * as express from 'express'
 import * as ws from 'ws'
 import * as serveStatic from 'serve-static';
 import { RoomManager } from './RoomManager.js';
-import { ClientMessageNewClient, ServerMessage } from '../data/Data.js';
+import { ClientMessageNewClient, ServerMessage, ServerMessageSendChessMove } from '../data/Data.js';
 
 export type ClientData = {
     socket: ws,
@@ -78,7 +78,7 @@ export class GameServer {
                 break
             case "enterRoomCode":
                 let room = this.roomManager.getRoom(message.roomID)
-                if(typeof room == undefined) { //RoomCode is invalid
+                if (typeof room == undefined) { //RoomCode is invalid
                     this.sendMessageToClient(socket, {
                         type: "invalidRoomCode",
                         roomID: message.roomID
@@ -95,6 +95,16 @@ export class GameServer {
                     type: "startingGame",
                     clientName: clientData.name
                 })
+                break
+            case "sendChessMove":
+                room = this.roomManager.getRoom(message.roomID)
+                room.moves.push(message.move)
+                let sendChessMove: ServerMessageSendChessMove = {
+                    type: "sendChessMove",
+                    move: message.move
+                }
+                this.sendMessageToClient(room.clients[0].socket, sendChessMove)
+                this.sendMessageToClient(room.clients[1].socket, sendChessMove)
                 break
         }
 
