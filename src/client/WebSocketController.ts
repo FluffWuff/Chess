@@ -1,11 +1,10 @@
 import { ServerMessage, ClientMessage } from "../data/Data.js";
 
 export interface WebSocketListener {
-    onMessage(message: any): void
+    onMessage(message: ServerMessage): void
 }
 
 export class WebSocketController {
-
 
     connection: WebSocket
     connectionReady = false
