@@ -5,7 +5,7 @@
         "outDir": "./htdocs/js",
         "sourceMap": true,
         "types": [
-            "phaser"
+            "phaser", "jquery"
         ],
         "typeRoots": [
             "./node_modules/phaser/types"

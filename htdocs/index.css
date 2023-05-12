@@ -21,5 +21,17 @@
 #inputDiv {
     position: absolute;
     left: 200px;
-    top: 200px;
+    top: 100px;
+}
+
+#Username {
+    position: absolute;
+    left: 200px;
+    top: 500px;
+}
+
+#Room_code {
+    position: absolute;
+    left: 200px;
+    top: 100px;
 }
