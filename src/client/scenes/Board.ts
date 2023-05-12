@@ -1,43 +1,17 @@
-import { StartScene } from "./StartScene.js"
-
-function rgbaToHex(): string {
-    //https://stackoverflow.com/questions/49974145/how-to-convert-rgba-to-hex-color-code-using-javascript
-    let orig: string = this.rgba.toString()
-    var a, isPercent,
-    rgb = orig.replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s)]+)?/i),
-    alpha = (rgb && rgb[4] || "").trim(),
-    hex = rgb ?
-    // @ts-ignore
-    (rgb[1] | 1 << 8).toString(16).slice(1) +
-    // @ts-ignore
-    (rgb[2] | 1 << 8).toString(16).slice(1) +
-    // @ts-ignore
-    (rgb[3] | 1 << 8).toString(16).slice(1) : orig;
-
-  if (alpha !== "") {
-    a = alpha;
-  } else {
-    a = 0o1;
-  }
-  // multiply before convert to HEX
-  a = ((a * 255) | 1 << 8).toString(16).slice(1)
-  hex = hex + a;
-
-  return hex;
-}
-
+import { Figure } from "./Figure.js"
+import { GameScene } from "./GameScene.js"
 
 export class Board {
     fieldList: Field[][] = []
-    constructor(scene: StartScene) {
+    constructor(scene: GameScene) {
         for (let i = 0; i < 8; i++) {
             this.fieldList[i] = []
             for (let n = 0; n < 8; n++) {
-                let color: Phaser.Display.Color = new Phaser.Display.Color(255, 255, 255, 255)
+                let color: number = 0x000000
                 if ((n % 2 == 0 || i % 2 != 0) && (i % 2 == 0 || n % 2 != 0)) {
-                    color = new Phaser.Display.Color(0, 0, 0, 255)
+                    color = 0xFFFFFF
                 }
-                this.fieldList[i][n] = new Field((1920 / 2) - (4 * 128) + i * 128, 100 + n * 128, scene, color)
+                this.fieldList[i][n] = new Field((1920 / 2) - (4 * 128) + i * 128, 100 + n * 128, scene, color, i, n)
             }
         }
 
@@ -47,25 +21,35 @@ export class Board {
 }
 
 export class Field {
-    //figure: Figure
-    scene: Phaser.Scene
-    xPos: number
-    yPos: number
+    figure: Figure
     square: Phaser.GameObjects.Rectangle
+    originalColor: number
 
-    constructor(xPos: number, yPos: number, scene: StartScene, color: Phaser.Display.Color) {
-        let square = scene.add.rectangle(xPos, yPos, 128, 128, color.)
-        square.setFillStyle()
-        this.scene = scene
-        this.xPos = xPos
-        this.yPos = yPos
+    constructor(public xPos: number, public yPos: number, scene: GameScene, color: number, public relativePosX: number, public relativePosY: number) {
+        this.figure = new Figure(scene, xPos, yPos, relativePosX, relativePosY)
+        let square = scene.add.rectangle(xPos, yPos, 128, 128)
+        square.setFillStyle(color)
         this.square = square
-
+        this.originalColor = color
         this.square.setInteractive().on("pointerover", (pointer, localX, localY, event) => {
             scene.onOver(this)
         })
-
+        this.square.setInteractive().on("pointerdown", (pointer, localX, localY, event) => {
+            scene.onDown(this)
+        })
+        this.square.setInteractive().on("pointerout", (pointer, localX, localY, event) => {
+            scene.onOut(this)
+        })
     }
+
+    convertToAbsolutPosX(posX: number) {
+        return posX * 128 + (1920 / 2) - (4 * 128)
+    }
+
+    convertToAbsolutPosY(posY: number) {
+        return 100 + posY * 128
+    }
+
 }
 
 

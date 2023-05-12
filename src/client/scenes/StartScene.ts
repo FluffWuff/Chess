@@ -1,6 +1,6 @@
 import { Board, Field} from "./Board.js"
 
-export class StartScene extends Phaser.Scene implements HoverListener {
+export class StartScene extends Phaser.Scene {
     constructor() {
         super({
             key: "StartScene"
@@ -14,7 +14,6 @@ export class StartScene extends Phaser.Scene implements HoverListener {
 
     create() {
         let text = this.add.text(100, 100, "Chess")
-        let board = new Board(this)
         
     }
     
@@ -22,10 +21,6 @@ export class StartScene extends Phaser.Scene implements HoverListener {
         console.log("Dada")
     }
 
-}
-
-interface HoverListener {
-    onOver(field: Field)   
 }
 
 
