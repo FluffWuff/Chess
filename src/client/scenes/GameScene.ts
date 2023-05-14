@@ -1,4 +1,5 @@
 import { Board, Field } from "./Board.js"
+import { Figure } from "./Figure"
 
 export class GameScene extends Phaser.Scene implements HoverListener {
 
@@ -42,6 +43,7 @@ export class GameScene extends Phaser.Scene implements HoverListener {
             field.figure.posX = field.relativePosX
             field.figure.posY = field.relativePosY
             console.log("Moved to: " + field.relativePosX + " " + field.relativePosY)
+            field.figure.moveFigure(this.clickedField.convertToAbsolutPosX(), this.clickedField.convertToAbsolutPosY())
             this.clickedField.figure = null
             this.clickedField = null
         }

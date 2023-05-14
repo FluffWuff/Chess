@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "phaser": "^3.55.2",
+    "phaser": "^3.60.0",
     "typescript": "^4.9.5",
     "ws": "^8.12.1"
   }

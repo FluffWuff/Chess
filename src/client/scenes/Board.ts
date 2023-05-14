@@ -26,11 +26,12 @@ export class Field {
     originalColor: number
 
     constructor(public xPos: number, public yPos: number, scene: GameScene, color: number, public relativePosX: number, public relativePosY: number) {
-        this.figure = new Figure(scene, xPos, yPos, relativePosX, relativePosY)
+        
         let square = scene.add.rectangle(xPos, yPos, 128, 128)
         square.setFillStyle(color)
         this.square = square
         this.originalColor = color
+        this.figure = new Figure(scene, xPos, yPos, relativePosX, relativePosY)
         this.square.setInteractive().on("pointerover", (pointer, localX, localY, event) => {
             scene.onOver(this)
         })
@@ -42,12 +43,12 @@ export class Field {
         })
     }
 
-    convertToAbsolutPosX(posX: number) {
-        return posX * 128 + (1920 / 2) - (4 * 128)
+    convertToAbsolutPosX() {
+        return this.xPos * 128 + (1920 / 2) - (4 * 128)
     }
 
-    convertToAbsolutPosY(posY: number) {
-        return 100 + posY * 128
+    convertToAbsolutPosY() {
+        return 100 + this.yPos	 * 128
     }
 
 }
