@@ -1,16 +1,16 @@
 export class Figure {
 
-    rect: Phaser.GameObjects.Rectangle
+    sprite: Phaser.GameObjects.Sprite
 
-    posX: number
-    posY: number
-
-    constructor(scene: Phaser.Scene, x: number, y: number, posX: number, posY: number) {
-        this.rect = scene.add.rectangle(x, y, 20, 20, 0x00FF00)
-        this.rect.setDepth(20)
+    constructor(scene: Phaser.Scene, x: number, y: number, public posX: number, public posY: number, spriteIndex: number) {
+        this.sprite = scene.add.sprite(x, y, "figures", spriteIndex)
+        this.sprite.setDisplayOrigin(0,0).setDisplaySize(128, 128)
     }
 
     moveFigure(x: number, y: number) {
-        this.rect.setPosition(x, y)
+        this.sprite.setPosition(x, y).setDepth(20)
+        console.log("X: " + x + " Y: "+y)
     }
+
+
 }

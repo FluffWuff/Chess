@@ -3,7 +3,7 @@ import { Figure } from "./Figure"
 
 export class GameScene extends Phaser.Scene implements HoverListener {
 
-    clickedField: Field = null
+    markedField: Field = null
 
     constructor() {
         super({
@@ -14,13 +14,15 @@ export class GameScene extends Phaser.Scene implements HoverListener {
 
 
     preload() {
-
+        this.load.spritesheet("figures", "assets/Spritesheet.png", {
+            frameWidth: 314,
+            frameHeight: 302
+        })
     }
 
     create() {
         let text = this.add.text(100, 100, "Chess")
         let board = new Board(this)
-
     }
 
     onOver(field: Field) {
@@ -30,22 +32,30 @@ export class GameScene extends Phaser.Scene implements HoverListener {
 
     onDown(field: Field) {
         //if(field.figure == null) return
-        if (this.clickedField == null) {
-            this.clickedField = field
+        if (this.markedField == null) {
+            this.markedField = field
             field.square.setFillStyle(0xFF0000) //select figure to move
         } else {
-            if (this.clickedField == field) {
+            if (this.markedField == field) {
                 field.square.setFillStyle(field.originalColor)
                 return
             }
             //check if move is legal
-            field.figure = this.clickedField.figure
+            //field.figure = this.clickedField.figure
+            //field.figure.posX = field.relativePosX
+            //field.figure.posY = field.relativePosY
+            //console.log("Moved to: " + field.relativePosX + " " + field.relativePosY)
+            //field.figure.moveFigure(field.convertToAbsolutPosX(), field.convertToAbsolutPosY())
+            //this.clickedField.figure = null
+            //this.clickedField = null
+            field.figure = this.markedField.figure
+            
+            this.markedField.figure.moveFigure(field.xPos, field.yPos)
             field.figure.posX = field.relativePosX
             field.figure.posY = field.relativePosY
-            console.log("Moved to: " + field.relativePosX + " " + field.relativePosY)
-            field.figure.moveFigure(this.clickedField.convertToAbsolutPosX(), this.clickedField.convertToAbsolutPosY())
-            this.clickedField.figure = null
-            this.clickedField = null
+
+            this.markedField.figure = null
+            this.markedField = null
         }
 
 
