@@ -40,17 +40,9 @@ export class GameScene extends Phaser.Scene implements HoverListener {
                 field.square.setFillStyle(field.originalColor)
                 return
             }
-            //check if move is legal
-            //field.figure = this.clickedField.figure
-            //field.figure.posX = field.relativePosX
-            //field.figure.posY = field.relativePosY
-            //console.log("Moved to: " + field.relativePosX + " " + field.relativePosY)
-            //field.figure.moveFigure(field.convertToAbsolutPosX(), field.convertToAbsolutPosY())
-            //this.clickedField.figure = null
-            //this.clickedField = null
             field.figure = this.markedField.figure
             
-            this.markedField.figure.moveFigure(field.xPos, field.yPos)
+            field.figure.moveFigure(field.relativePosX, field.relativePosY)
             field.figure.posX = field.relativePosX
             field.figure.posY = field.relativePosY
 
