@@ -17,8 +17,11 @@ export class StartScene extends Phaser.Scene {
         
         let caption = this.add.text(100, 300, "Press Enter to start")
         this.input.keyboard.on('keydown-ENTER', function() {
-            console.log('From StartScene to MenuScene')
-            this.scene.start('MenuScene')
+            let username = "" + $('#username').val();
+            if(username.length > 0){
+                console.log('From StartScene to MenuScene')
+                this.scene.start('MenuScene')
+            }
         }, this)
 
         jQuery('.Username').show();
