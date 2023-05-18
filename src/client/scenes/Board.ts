@@ -5,9 +5,8 @@ export class Board {
 
 
     /*
-    * LowerCase: white pieces
-    * UpperCase: black pieces
-    * 
+    * lowerCase: white piece
+    * UpperCase: black piece
     */
     stringFieldList: string[] = [
         "RSBQKBSR",
@@ -59,14 +58,15 @@ export class Field {
     square: Phaser.GameObjects.Rectangle
     originalColor: number
 
-    constructor(public xPos: number, public yPos: number, scene: GameScene, color: number, public relativePosX: number, public relativePosY: number, spriteIndex: number) {
-        
+    constructor(public xPos: number, public yPos: number, scene: GameScene, color: number, public relativePosX: number, public relativePosY: number, spriteIndex: number) {   
         let square = scene.add.rectangle(xPos, yPos, 128, 128)
         square.setDisplayOrigin(0,0 )
         square.setFillStyle(color)
         this.square = square
         this.originalColor = color
+    
         if(spriteIndex != -1) this.figure = new Figure(scene, xPos, yPos, relativePosX, relativePosY, spriteIndex)
+
         this.square.setInteractive().on("pointerover", (pointer, localX, localY, event) => {
             scene.onOver(this)
         })

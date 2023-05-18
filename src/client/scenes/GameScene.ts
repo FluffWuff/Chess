@@ -41,11 +41,14 @@ export class GameScene extends Phaser.Scene implements HoverListener {
                 return
             }
             field.figure = this.markedField.figure
+
+            let diffX = field.relativePosX - this.markedField.relativePosX
+            let diffY = field.relativePosY - this.markedField.relativePosY
             
             field.figure.moveFigure(field.relativePosX, field.relativePosY)
-            field.figure.posX = field.relativePosX
-            field.figure.posY = field.relativePosY
+            
 
+            this.markedField.square.setFillStyle(this.markedField.originalColor)
             this.markedField.figure = null
             this.markedField = null
         }
@@ -54,7 +57,7 @@ export class GameScene extends Phaser.Scene implements HoverListener {
     }
 
     onOut(field: Field) {
-        field.square.setFillStyle(field.originalColor)
+        if(field != this.markedField) field.square.setFillStyle(field.originalColor)
 
     }
 }
