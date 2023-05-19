@@ -1,7 +1,7 @@
-
 import { ServerMessage } from "../../data/Data.js"
 import { WebSocketListener } from "../WebSocketController.js"
 import { Board, Field } from "./Board.js"
+
 
 export class StartScene extends Phaser.Scene implements WebSocketListener{
 
@@ -18,7 +18,11 @@ export class StartScene extends Phaser.Scene implements WebSocketListener{
 
     create() {
         let text = this.add.text(100, 100, "Chess")
-        new Board(this)
+        
+    }
+    
+    onOver(field: Field) {
+
     }
 
     onMessage(message: ServerMessage): void {
@@ -26,3 +30,4 @@ export class StartScene extends Phaser.Scene implements WebSocketListener{
     }
 
 }
+
