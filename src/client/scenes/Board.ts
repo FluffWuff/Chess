@@ -54,7 +54,7 @@ export class Board {
 }
 
 export class Field {
-    figure: Figure
+    figure: Figure = null
     square: Phaser.GameObjects.Rectangle
     originalColor: number
 

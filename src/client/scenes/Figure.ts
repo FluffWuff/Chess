@@ -28,7 +28,7 @@ export class Figure {
         this.sprite.setDisplayOrigin(0, 0).setDisplaySize(128, 128)
     }
 
-    moveFigure(boardX: number, boardY: number) {
+    moveFigure(boardX: number, boardY: number): boolean {
         let diffX = boardX - this.posX
         let diffY = boardY - this.posY
         //check if difference is legal
@@ -53,7 +53,7 @@ export class Figure {
 
         if (!isLegal) {
             console.log("ILLEGAL MOVE!!!!")
-            return
+            return false
         }
         this.sprite.setPosition(this.convertToAbsolutePosX(boardX), this.convertToAbsolutePosY(boardY)).setDepth(20)
         this.posX = boardX
@@ -67,6 +67,7 @@ export class Figure {
                 this.figureMoveType.pop()
             }
         }
+        return true
     }
 
     convertToAbsolutePosX(relativeX: number) {
@@ -88,6 +89,6 @@ export class FigureMoveTypes {
     static KING = [[-1, -1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]]
     static ROOK = [[0, 1], [0, -1], [1, 0], [-1, 0]] //all other ways will be multiplied
     static BISHOP = [[-1, 1], [1, 1], [1, -1], [-1, -1]] //all other ways will be multiplied
-    static QUEEN = [[-1, -1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]] //all other ways will be multiplied
+    static QUEEN = [[-1, -1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]] //all other ways will be multiplied
 
 }

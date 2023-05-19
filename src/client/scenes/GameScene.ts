@@ -5,13 +5,13 @@ export class GameScene extends Phaser.Scene implements HoverListener {
 
     markedField: Field = null
 
+    board: Board = null
+
     constructor() {
         super({
             key: "StartScene"
         })
     }
-
-
 
     preload() {
         this.load.spritesheet("figures", "assets/Spritesheet.png", {
@@ -22,12 +22,11 @@ export class GameScene extends Phaser.Scene implements HoverListener {
 
     create() {
         let text = this.add.text(100, 100, "Chess")
-        let board = new Board(this)
+        this.board = new Board(this)
     }
 
     onOver(field: Field) {
         field.square.setFillStyle(0xFFF000)
-
     }
 
     onDown(field: Field) {
@@ -44,12 +43,22 @@ export class GameScene extends Phaser.Scene implements HoverListener {
 
             let diffX = field.relativePosX - this.markedField.relativePosX
             let diffY = field.relativePosY - this.markedField.relativePosY
-            
-            field.figure.moveFigure(field.relativePosX, field.relativePosY)
-            
+            //for (var i = 0; i < Math.abs(diffX); i++) {
+            //    for (var j = 0; j < Math.abs(diffY); j++) {
+            //        //console.log(diffX + " " + diffY)
+            //        console.log((this.markedField.relativePosX + i-1) + " " + (this.markedField.relativePosY + j-1))
+            //        if (this.board.fieldList[this.markedField.relativePosX + i-1][this.markedField.relativePosY + j-1].figure == null) {
+            //            this.markedField.square.setFillStyle(this.markedField.originalColor)
+            //            this.markedField = null
+            //            return
+            //        }
+            //    }
+            //}
+
+            let isSuccessful = field.figure.moveFigure(field.relativePosX, field.relativePosY)
 
             this.markedField.square.setFillStyle(this.markedField.originalColor)
-            this.markedField.figure = null
+            if (isSuccessful) this.markedField.figure = null
             this.markedField = null
         }
 
@@ -57,7 +66,7 @@ export class GameScene extends Phaser.Scene implements HoverListener {
     }
 
     onOut(field: Field) {
-        if(field != this.markedField) field.square.setFillStyle(field.originalColor)
+        if (field != this.markedField) field.square.setFillStyle(field.originalColor)
 
     }
 }
