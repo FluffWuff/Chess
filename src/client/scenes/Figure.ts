@@ -7,6 +7,8 @@ export class Figure {
     //Indicates how many time the figure was moved
     moveCount = 0
 
+    isWhitePiece: boolean
+
     constructor(scene: Phaser.Scene, x: number, y: number, public posX: number, public posY: number, spriteIndex: number) {
         // replace with switch-case
         if (spriteIndex == 0 || spriteIndex == 1) {
@@ -26,6 +28,8 @@ export class Figure {
         }
         this.sprite = scene.add.sprite(x, y, "figures", spriteIndex)
         this.sprite.setDisplayOrigin(0, 0).setDisplaySize(128, 128)
+
+        this.isWhitePiece = spriteIndex % 2 == 0
     }
 
     moveFigure(boardX: number, boardY: number): boolean {
