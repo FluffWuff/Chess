@@ -51,6 +51,7 @@ export class Board {
     }
 
 
+
 }
 
 export class Field {
@@ -80,5 +81,4 @@ export class Field {
     }
 
 }
-
 

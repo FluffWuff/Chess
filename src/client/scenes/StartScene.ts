@@ -1,5 +1,6 @@
 import { Board, Field} from "./Board.js"
 
+
 export class StartScene extends Phaser.Scene {
     constructor() {
         super({
@@ -18,7 +19,7 @@ export class StartScene extends Phaser.Scene {
     }
     
     onOver(field: Field) {
-        console.log("Dada")
+
     }
 
 }
