@@ -1,4 +1,6 @@
+import { GameScene } from "./scenes/GameScene.js"
 import { StartScene } from "./scenes/StartScene.js"
+
 
 var config: Phaser.Types.Core.GameConfig = {
     width: 1920,
@@ -7,7 +9,7 @@ var config: Phaser.Types.Core.GameConfig = {
     parent: 'game',
     antialias: false,
     scene: [
-        new StartScene()
+        new GameScene()
     ],
     physics: {
         default: "arcade",
