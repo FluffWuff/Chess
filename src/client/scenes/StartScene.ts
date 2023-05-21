@@ -1,6 +1,6 @@
 import { ServerMessage } from "../../data/Data.js"
 import { WebSocketListener } from "../WebSocketController.js"
-import { Board, Field } from "./Board.js"
+import { Board, Field } from "../chess/Board.js"
 
 
 export class StartScene extends Phaser.Scene implements WebSocketListener{

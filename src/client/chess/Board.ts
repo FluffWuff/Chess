@@ -1,5 +1,5 @@
 import { Figure } from "./Figure.js"
-import { GameScene } from "./GameScene.js"
+import { GameScene } from "../scenes/GameScene.js"
 
 export class Board {
 

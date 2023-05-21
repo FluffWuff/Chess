@@ -1,15 +1,22 @@
-import { Board, Field } from "./Board.js"
-import { Figure } from "./Figure"
+import { ServerMessage } from "../../data/Data.js"
+import { Board, Field } from "../chess/Board.js"
+import { Figure } from "../chess/Figure"
+import { WebSocketListener, WebSocketController } from "../WebSocketController.js"
 
-export class GameScene extends Phaser.Scene implements HoverListener {
+export class GameScene extends Phaser.Scene implements HoverListener, WebSocketListener {
 
     markedField: Field = null
 
     board: Board = null
 
+    webSocketController: WebSocketController
+
     constructor() {
         super({
             key: "StartScene"
+        })
+        this.webSocketController = new WebSocketController(this, () => {
+            console.log("Connected")
         })
     }
 
@@ -76,17 +83,43 @@ export class GameScene extends Phaser.Scene implements HoverListener {
 
             let isSuccessful = field.figure.moveFigure(field.relativePosX, field.relativePosY)
 
+            
             this.markedField.square.setFillStyle(this.markedField.originalColor)
-            if (isSuccessful) this.markedField.figure = null
+            if (isSuccessful) {
+                this.markedField.figure = null
+
+                //send move to server
+                this.webSocketController.send({
+                    type: "sendChessMove",
+                    roomID: "",
+                    from: this.markedField.relativePosX+":"+this.markedField.relativePosY,
+                    to: field.relativePosX+":"+field.relativePosY
+                })
+            }
             this.markedField = null
+
         }
+    }
 
+    renderReceivedChessMove(from: string, to: string) {
+        let fromX = from.split(":")[0]
+        let fromY = from.split(":")[1]
 
+        
     }
 
     onOut(field: Field) {
         if (field != this.markedField || this.markedField == null) field.square.setFillStyle(field.originalColor)
     }
+
+    onMessage(message: ServerMessage): void {
+        switch(message.type) {
+            case "sendChessMove":
+                this.renderReceivedChessMove(message.from, message.to)
+                break
+        }
+    }
+
 }
 
 interface HoverListener {
