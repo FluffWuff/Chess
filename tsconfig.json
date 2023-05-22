@@ -4,6 +4,7 @@
         "module": "es6",
         "outDir": "./htdocs/js",
         "sourceMap": true,
+        "allowSyntheticDefaultImports": true,
         "lib": ["es6", "dom", "dom.iterable", "scripthost"],
         "types": [
             "phaser"

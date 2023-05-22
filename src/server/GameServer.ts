@@ -1,6 +1,6 @@
-import * as express from 'express'
-import * as ws from 'ws'
-import * as serveStatic from 'serve-static';
+import express from 'express';
+import ws from 'ws';
+import serveStatic from 'serve-static';
 import { RoomManager } from './RoomManager.js';
 import { ClientMessageNewClient, ServerMessage, ServerMessageSendChessMove } from '../data/Data.js';
 
@@ -101,7 +101,8 @@ export class GameServer {
                 room.moves.push(message.move)
                 let sendChessMove: ServerMessageSendChessMove = {
                     type: "sendChessMove",
-                    move: message.move
+                    from: message.from,
+                    to: message.to
                 }
                 this.sendMessageToClient(room.clients[0].socket, sendChessMove)
                 this.sendMessageToClient(room.clients[1].socket, sendChessMove)

@@ -13,7 +13,7 @@ export type ClientMessageNewRoom = {
 
 export type ClientMessageSendChessMove = {
     type: "sendChessMove",
-    roomID: string,
+    //roomID: string,
     from: string,
     to: string
 }

@@ -91,7 +91,7 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
                 //send move to server
                 this.webSocketController.send({
                     type: "sendChessMove",
-                    roomID: "",
+                    //roomID: "",
                     from: this.markedField.relativePosX+":"+this.markedField.relativePosY,
                     to: field.relativePosX+":"+field.relativePosY
                 })
@@ -105,7 +105,16 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
         let fromX = from.split(":")[0]
         let fromY = from.split(":")[1]
 
-        
+        let toX = +to.split(":")[0]
+        let toY = +to.split(":")[1]
+
+        let fromField: Field = this.board.fieldList[fromX][fromY]
+        let toField: Field = this.board.fieldList[toX][toY]
+
+        toField.figure = fromField.figure
+        fromField.figure = null
+        toField.figure.moveFigure(toX, toY)
+        console.log("Renderd move by server: " + from + " " + to)
     }
 
     onOut(field: Field) {
