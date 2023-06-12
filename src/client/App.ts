@@ -1,5 +1,7 @@
+import { GameScene } from "./scenes/GameScene.js"
 import { MenuScene } from "./scenes/MenuScene.js"
 import { StartScene } from "./scenes/StartScene.js"
+
 
 var config: Phaser.Types.Core.GameConfig = {
     width: 1920,
@@ -8,6 +10,7 @@ var config: Phaser.Types.Core.GameConfig = {
     parent: 'game',
     antialias: false,
     scene: [
+        new GameScene(),
         new StartScene(),
         new MenuScene()
     ],
