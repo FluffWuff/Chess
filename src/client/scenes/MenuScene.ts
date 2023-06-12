@@ -12,10 +12,6 @@ export class MenuScene extends Phaser.Scene {
     }
 
     create() {
-
-
-
-        
         let joinGame = this.add.text(100, 50, "Enter a room key here, to join a game")
 
         jQuery('.Username').hide();
