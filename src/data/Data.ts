@@ -13,8 +13,9 @@ export type ClientMessageNewRoom = {
 
 export type ClientMessageSendChessMove = {
     type: "sendChessMove",
-    roomID: string,
-    move: string
+    //roomID: string,
+    from: string,
+    to: string
 }
 
 export type ClientMessageEnterRoomCode = {
@@ -32,7 +33,8 @@ export type ServerMessageNewClient = {
 
 export type ServerMessageSendChessMove = {
     type: "sendChessMove",
-    move: string
+    from: string,
+    to: string
 }
 
 export type ServerMessageNewRoom = {

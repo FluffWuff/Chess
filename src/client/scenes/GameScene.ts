@@ -1,26 +1,37 @@
-import { Board, Field } from "./Board.js"
-import { Figure } from "./Figure"
+import { ClientMessageNewClient, ServerMessage } from "../../data/Data.js"
+import { Board, Field } from "../chess/Board.js"
+import { WebSocketListener, WebSocketController } from "../WebSocketController.js"
 
-export class GameScene extends Phaser.Scene implements HoverListener {
+export class GameScene extends Phaser.Scene implements HoverListener, WebSocketListener {
 
     markedField: Field = null
 
     board: Board = null
+
+    webSocketController: WebSocketController
 
     constructor() {
         super({
             key: "StartScene"
         })
     }
-
+    
     preload() {
         this.load.spritesheet("figures", "assets/Spritesheet.png", {
             frameWidth: 314,
             frameHeight: 302
         })
     }
-
+    
     create() {
+        this.webSocketController = new WebSocketController(this, (controller: WebSocketController) => {
+            let message: ClientMessageNewClient = {
+                type: "newClient",
+                name: "a" //will get data from StartScene
+            }
+            controller.send(message);    
+        })
+
         let text = this.add.text(100, 100, "Chess")
         this.board = new Board(this)
     }
@@ -76,17 +87,52 @@ export class GameScene extends Phaser.Scene implements HoverListener {
 
             let isSuccessful = field.figure.moveFigure(field.relativePosX, field.relativePosY)
 
+            
             this.markedField.square.setFillStyle(this.markedField.originalColor)
-            if (isSuccessful) this.markedField.figure = null
+            if (isSuccessful) {
+                this.markedField.figure = null
+
+                //send move to server
+                this.webSocketController.send({
+                    type: "sendChessMove",
+                    //roomID: "",
+                    from: this.markedField.relativePosX+":"+this.markedField.relativePosY,
+                    to: field.relativePosX+":"+field.relativePosY
+                })
+            }
             this.markedField = null
+
         }
+    }
 
+    renderReceivedChessMove(from: string, to: string) {
+        let fromX = from.split(":")[0]
+        let fromY = from.split(":")[1]
 
+        let toX = +to.split(":")[0]
+        let toY = +to.split(":")[1]
+
+        let fromField: Field = this.board.fieldList[fromX][fromY]
+        let toField: Field = this.board.fieldList[toX][toY]
+
+        toField.figure = fromField.figure
+        fromField.figure = null
+        toField.figure.moveFigure(toX, toY)
+        console.log("Renderd move by server: " + from + " " + to)
     }
 
     onOut(field: Field) {
         if (field != this.markedField || this.markedField == null) field.square.setFillStyle(field.originalColor)
     }
+
+    onMessage(message: ServerMessage): void {
+        switch(message.type) {
+            case "sendChessMove":
+                this.renderReceivedChessMove(message.from, message.to)
+                break
+        }
+    }
+
 }
 
 interface HoverListener {

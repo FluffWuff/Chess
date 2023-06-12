@@ -1,5 +1,5 @@
-import { ClientData, GameServer } from "./GameServer.js";
-import { Room } from "./Room.js";
+import { ClientData, GameServer } from "./GameServer";
+import { Room } from "./Room";
 
 export class RoomManager {
 

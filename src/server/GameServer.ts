@@ -1,8 +1,8 @@
-import * as express from 'express'
-import * as ws from 'ws'
+import * as express from 'express';
 import * as serveStatic from 'serve-static';
-import { RoomManager } from './RoomManager.js';
-import { ClientMessageNewClient, ServerMessage, ServerMessageSendChessMove } from '../data/Data.js';
+import * as ws from 'ws';
+import { RoomManager } from './RoomManager';
+import { ClientMessageNewClient, ServerMessage, ServerMessageSendChessMove } from '../data/Data';
 
 export type ClientData = {
     socket: ws,
@@ -19,9 +19,9 @@ export class GameServer {
     socketToClientDataMap: Map<ws, ClientData> = new Map()
 
     constructor() {
-        this.gameServerExpress.use(serveStatic('./htodcs/'))
-        const server = this.gameServerExpress.listen(5600)
-        console.log("Server listening on port 5600")
+        this.gameServerExpress.use(serveStatic('./htdocs/'))
+        const server = this.gameServerExpress.listen(5500)
+        console.log("Server listening on port 5500")
 
         this.wsServer = new ws.Server({ noServer: true });
 
@@ -31,8 +31,9 @@ export class GameServer {
             that.wsServer.handleUpgrade(request, socket, head, socket => {
 
                 that.onWebSocketConnect(socket);
-
+                console.log("Hier!");
                 socket.on('message', (message: ws.Data) => {
+                    console.log({ m: "New message", m1: message});
                     that.onWebSocketClientMessage(socket, message);
                 })
 
@@ -47,17 +48,14 @@ export class GameServer {
     }
 
     onWebSocketConnect(socket: ws) {
-        this.socketToClientDataMap.set(socket, {
-            socket: socket,
-            name: null,
-            currentRoom: null
-        })
-        console.log("Neuer Spieler connected")
+        
     }
 
     onWebSocketClientMessage(socket: ws, messageJson: ws.Data) {
         let message = JSON.parse(<string>messageJson)
         let clientData: ClientData = this.socketToClientDataMap.get(socket)
+
+        //console.log(message)
 
         switch (message.type) {
             case "newClient":
@@ -67,6 +65,7 @@ export class GameServer {
                     currentRoom: null
                 }
                 this.socketToClientDataMap.set(socket, clientData)
+                console.log("new Client connected")
                 break
             case "newRoom":
                 let roomID = this.roomManager.createRoom(clientData)
@@ -97,14 +96,16 @@ export class GameServer {
                 })
                 break
             case "sendChessMove":
-                room = this.roomManager.getRoom(message.roomID)
-                room.moves.push(message.move)
+                //room = this.roomManager.getRoom(message.roomID)
+                //room.moves.push(message.move)
                 let sendChessMove: ServerMessageSendChessMove = {
                     type: "sendChessMove",
-                    move: message.move
+                    from: message.from,
+                    to: message.to
                 }
-                this.sendMessageToClient(room.clients[0].socket, sendChessMove)
-                this.sendMessageToClient(room.clients[1].socket, sendChessMove)
+                //this.sendMessageToClient(room.clients[0].socket, sendChessMove)
+                //this.sendMessageToClient(room.clients[1].socket, sendChessMove)
+                this.sendToAllClientsExceptOne(socket, sendChessMove)
                 break
         }
 
@@ -120,7 +121,15 @@ export class GameServer {
     }
 
 
+    sendToAllClientsExceptOne(dontSendToclientSocket: ws, message: ServerMessage) {
+        let messageAsJson = JSON.stringify(message);
 
+        for (let client of this.socketToClientDataMap.keys()) {
+            if (client != dontSendToclientSocket) {
+                client.send(messageAsJson);
+            }
+        }
+    }
 }
 
 new GameServer()
