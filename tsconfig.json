@@ -6,10 +6,11 @@
         "allowSyntheticDefaultImports": true,
         "lib": ["es6", "dom", "dom.iterable", "scripthost"],
         "types": [
-            "phaser"
+            "phaser", "jquery"
         ],
         "typeRoots": [
-            "./node_modules/phaser/types"
+            "./node_modules/phaser/types",
+            "./node_modules/jquery/types"
         ],
     },
     "include": [
