@@ -1,6 +1,5 @@
-import { ServerMessage } from "../../data/Data.js"
+import { ClientMessageNewClient, ServerMessage } from "../../data/Data.js"
 import { Board, Field } from "../chess/Board.js"
-import { Figure } from "../chess/Figure"
 import { WebSocketListener, WebSocketController } from "../WebSocketController.js"
 
 export class GameScene extends Phaser.Scene implements HoverListener, WebSocketListener {
@@ -15,19 +14,24 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
         super({
             key: "StartScene"
         })
-        this.webSocketController = new WebSocketController(this, () => {
-            console.log("Connected")
-        })
     }
-
+    
     preload() {
         this.load.spritesheet("figures", "assets/Spritesheet.png", {
             frameWidth: 314,
             frameHeight: 302
         })
     }
-
+    
     create() {
+        this.webSocketController = new WebSocketController(this, (controller: WebSocketController) => {
+            let message: ClientMessageNewClient = {
+                type: "newClient",
+                name: "a" //will get data from StartScene
+            }
+            controller.send(message);    
+        })
+
         let text = this.add.text(100, 100, "Chess")
         this.board = new Board(this)
     }

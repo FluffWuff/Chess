@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "es6",
         "outDir": "./htdocs/js",
         "sourceMap": true,
         "allowSyntheticDefaultImports": true,
