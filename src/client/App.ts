@@ -10,8 +10,8 @@ var config: Phaser.Types.Core.GameConfig = {
     parent: 'game',
     antialias: false,
     scene: [
-        new GameScene(),
         new StartScene(),
+        new GameScene(),
         new MenuScene()
     ],
     physics: {

@@ -12,10 +12,15 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
 
     constructor() {
         super({
-            key: "StartScene"
+            key: "GameScene"
         })
     }
     
+    init(data) {
+        this.webSocketController = data.webSocketController
+        this.webSocketController.messageListeners.push(this)
+    }
+
     preload() {
         this.load.spritesheet("figures", "assets/Spritesheet.png", {
             frameWidth: 314,
@@ -24,14 +29,6 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
     }
     
     create() {
-        this.webSocketController = new WebSocketController(this, (controller: WebSocketController) => {
-            let message: ClientMessageNewClient = {
-                type: "newClient",
-                name: "a" //will get data from StartScene
-            }
-            controller.send(message);    
-        })
-
         let text = this.add.text(100, 100, "Chess")
         this.board = new Board(this)
     }

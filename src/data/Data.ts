@@ -1,4 +1,4 @@
-export type ClientMessage = ClientMessageNewClient | ClientMessageSendChessMove | ClientMessageNewRoom | ClientMessageEnterRoomCode
+export type ClientMessage = ClientMessageNewClient | ClientMessageSendChessMove | ClientMessageNewRoomRequest | ClientMessageEnterRoomCode
 
 export type ClientMessageNewClient = {
     type: "newClient",
@@ -6,7 +6,7 @@ export type ClientMessageNewClient = {
 }
 
 
-export type ClientMessageNewRoom = {
+export type ClientMessageNewRoomRequest = {
     type: "newRoom",
 
 }

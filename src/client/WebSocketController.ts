@@ -9,11 +9,12 @@ export class WebSocketController {
     connection: WebSocket
     connectionReady = false
 
-    constructor(private messageListener: WebSocketListener, onWebSocketReady?: (controller: WebSocketController) => void) {
+    messageListeners: WebSocketListener[] = []
+
+    constructor(onWebSocketReady?: (controller: WebSocketController) => void) {
         let url: string = (window.location.protocol.startsWith("https") ? "wss://" : "ws://") + window.location.host;
         console.log(url)
         this.connection = new WebSocket(url);
-
         let that = this;
 
         this.connection.onopen = function () {
@@ -33,7 +34,8 @@ export class WebSocketController {
                 return;
             }
 
-            that.messageListener.onMessage(serverMessage);
+            
+            that.messageListeners.forEach((webSocketListener) => webSocketListener.onMessage(serverMessage))
         };
 
     }

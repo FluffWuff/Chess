@@ -65,7 +65,7 @@ export class GameServer {
                     currentRoom: null
                 }
                 this.socketToClientDataMap.set(socket, clientData)
-                console.log("new Client connected")
+                console.log("new Client connected: " + message.name)
                 break
             case "newRoom":
                 let roomID = this.roomManager.createRoom(clientData)
