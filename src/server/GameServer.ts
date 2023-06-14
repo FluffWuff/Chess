@@ -56,7 +56,6 @@ export class GameServer {
         let clientData: ClientData = this.socketToClientDataMap.get(socket)
 
         //console.log(message)
-
         switch (message.type) {
             case "newClient":
                 clientData = {
@@ -88,24 +87,34 @@ export class GameServer {
                 room.clients[1] = clientData
                 this.sendMessageToClient(socket, {
                     type: "startingGame",
-                    clientName: room.host.name
+                    whitePiecePlayer: room.host.name,
+                    blackPiecePlayer: clientData.name,
+                    roomID: message.roomID,
+                    whichPiece: true
                 })
                 this.sendMessageToClient(room.host.socket, {
                     type: "startingGame",
-                    clientName: clientData.name
+                    whitePiecePlayer: room.host.name,
+                    blackPiecePlayer: clientData.name,
+                    roomID: message.roomID,
+                    whichPiece: false
                 })
+                this.roomManager.updateRoom(room)
                 break
             case "sendChessMove":
-                //room = this.roomManager.getRoom(message.roomID)
-                //room.moves.push(message.move)
+                console.log("RoomID: " + message.roomID)
+                let gameRoom = this.roomManager.getRoom(message.roomID)
+                console.log(gameRoom)
+                gameRoom.moves.push(message.move)
                 let sendChessMove: ServerMessageSendChessMove = {
                     type: "sendChessMove",
                     from: message.from,
-                    to: message.to
+                    to: message.to,
+                    whichPlayer: message.whichPlayer
                 }
-                //this.sendMessageToClient(room.clients[0].socket, sendChessMove)
-                //this.sendMessageToClient(room.clients[1].socket, sendChessMove)
-                this.sendToAllClientsExceptOne(socket, sendChessMove)
+                this.sendMessageToClient(gameRoom.clients[0].socket, sendChessMove)
+                this.sendMessageToClient(gameRoom.clients[1].socket, sendChessMove)
+                //this.sendToAllClientsExceptOne(socket, sendChessMove)
                 break
         }
 

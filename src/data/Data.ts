@@ -13,9 +13,10 @@ export type ClientMessageNewRoomRequest = {
 
 export type ClientMessageSendChessMove = {
     type: "sendChessMove",
-    //roomID: string,
+    roomID: string,
     from: string,
-    to: string
+    to: string,
+    whichPlayer: boolean
 }
 
 export type ClientMessageEnterRoomCode = {
@@ -34,7 +35,8 @@ export type ServerMessageNewClient = {
 export type ServerMessageSendChessMove = {
     type: "sendChessMove",
     from: string,
-    to: string
+    to: string,
+    whichPlayer: boolean
 }
 
 export type ServerMessageNewRoom = {
@@ -49,6 +51,8 @@ export type ServerMessageInvalidRoomCode = {
 
 export type ServerMessageStartingGame = {
     type: "startingGame",
-    clientName: string,
-
+    whitePiecePlayer: string,
+    blackPiecePlayer: string,
+    roomID: string,
+    whichPiece: boolean
 }

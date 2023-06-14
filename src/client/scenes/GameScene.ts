@@ -1,6 +1,7 @@
 import { ClientMessageNewClient, ServerMessage } from "../../data/Data.js"
 import { Board, Field } from "../chess/Board.js"
 import { WebSocketListener, WebSocketController } from "../WebSocketController.js"
+import { ServerMessageNewClient, ServerMessageStartingGame } from '../../data/Data';
 
 export class GameScene extends Phaser.Scene implements HoverListener, WebSocketListener {
 
@@ -9,16 +10,26 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
     board: Board = null
 
     webSocketController: WebSocketController
+    roomID: string
+    whoIsMoveText: Phaser.GameObjects.Text
+    whoIsMove: boolean = false
+    playerPiece: boolean
 
     constructor() {
         super({
             key: "GameScene"
         })
     }
-    
-    init(data) {
+
+    init(data: { webSocketController: WebSocketController, gameInfo: ServerMessageStartingGame }) {
         this.webSocketController = data.webSocketController
         this.webSocketController.messageListeners.push(this)
+        this.roomID = data.gameInfo.roomID
+        this.add.text(100, 50, "Spieler2: " + data.gameInfo.blackPiecePlayer)
+        this.add.text(100, 1000, "Spieler1: " + data.gameInfo.whitePiecePlayer)
+        this.whoIsMoveText = this.add.text(100, 250, "Weiß am Zug")
+        this.whoIsMove = false
+        this.playerPiece = data.gameInfo.whichPiece
     }
 
     preload() {
@@ -27,9 +38,9 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
             frameHeight: 302
         })
     }
-    
+
     create() {
-        let text = this.add.text(100, 100, "Chess")
+        //let text = this.add.text(100, 100, "Chess")
         this.board = new Board(this)
     }
 
@@ -39,12 +50,15 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
 
     onDown(field: Field) {
         //if(field.figure == null) return
+        if (this.playerPiece != this.whoIsMove) {
+            return;
+        }
         if (this.markedField == null) {
             field.square.setFillStyle(0xFF0000) //select figure to move
             this.markedField = field
         } else {
             let isIlegal = false
-            if (this.markedField == field) {
+            if (this.markedField == field) { // !this.markedField.figure.isWhitePiece != this.playerPiece
                 isIlegal = true
             }
 
@@ -58,11 +72,11 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
             }
 
 
-            if(isIlegal) {
+            if (isIlegal) {
                 field.square.setFillStyle(field.originalColor)
                 this.markedField.square.setFillStyle(this.markedField.originalColor)
                 this.markedField = null
-                return 
+                return
             }
 
             field.figure = this.markedField.figure
@@ -84,7 +98,7 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
 
             let isSuccessful = field.figure.moveFigure(field.relativePosX, field.relativePosY)
 
-            
+
             this.markedField.square.setFillStyle(this.markedField.originalColor)
             if (isSuccessful) {
                 this.markedField.figure = null
@@ -92,9 +106,10 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
                 //send move to server
                 this.webSocketController.send({
                     type: "sendChessMove",
-                    //roomID: "",
-                    from: this.markedField.relativePosX+":"+this.markedField.relativePosY,
-                    to: field.relativePosX+":"+field.relativePosY
+                    roomID: this.roomID,
+                    from: this.markedField.relativePosX + ":" + this.markedField.relativePosY,
+                    to: field.relativePosX + ":" + field.relativePosY,
+                    whichPlayer: this.playerPiece
                 })
             }
             this.markedField = null
@@ -102,20 +117,37 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
         }
     }
 
-    renderReceivedChessMove(from: string, to: string) {
-        let fromX = from.split(":")[0]
-        let fromY = from.split(":")[1]
+    renderReceivedChessMove(from: string, to: string, whichPlayer: boolean) {
+        let isRenderd = false
+        if (whichPlayer == this.playerPiece)
+            isRenderd = true
 
-        let toX = +to.split(":")[0]
-        let toY = +to.split(":")[1]
+        if (!isRenderd) {
+            let fromX = +from.split(":")[0]
+            let fromY = +from.split(":")[1]
 
-        let fromField: Field = this.board.fieldList[fromX][fromY]
-        let toField: Field = this.board.fieldList[toX][toY]
+            let toX = +to.split(":")[0]
+            let toY = +to.split(":")[1]
 
-        toField.figure = fromField.figure
-        fromField.figure = null
-        toField.figure.moveFigure(toX, toY)
-        console.log("Renderd move by server: " + from + " " + to)
+            console.log(fromX + " " + toX)
+            console.log(fromY + " " + toY)
+
+
+            let fromField: Field = this.board.fieldList[fromX][fromY]
+            let toField: Field = this.board.fieldList[toX][toY]
+
+            toField.figure = fromField.figure
+            fromField.figure = null
+            toField.figure.moveFigure(toX, toY)
+            console.log("Renderd move by server: " + from + " " + to)
+        }
+
+        this.whoIsMove = !this.whoIsMove
+        if (this.whoIsMove) {
+            this.whoIsMoveText.setText("Schwarz ist am Zug")
+        } else {
+            this.whoIsMoveText.setText("Weiß ist am Zug")
+        }
     }
 
     onOut(field: Field) {
@@ -123,9 +155,9 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
     }
 
     onMessage(message: ServerMessage): void {
-        switch(message.type) {
+        switch (message.type) {
             case "sendChessMove":
-                this.renderReceivedChessMove(message.from, message.to)
+                this.renderReceivedChessMove(message.from, message.to, message.whichPlayer)
                 break
         }
     }

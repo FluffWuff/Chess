@@ -59,9 +59,8 @@ export class MenuScene extends Phaser.Scene implements WebSocketListener {
             case "invalidRoomCode":
                 break
             case "startingGame":
-                console.log("Starting game against " + message.clientName)
                 jQuery('.Room_code').hide();
-                this.scene.start("GameScene", {webSocketController: this.webSocketController})
+                this.scene.start("GameScene", {webSocketController: this.webSocketController, gameInfo: message})
         }
     }
 

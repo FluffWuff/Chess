@@ -4,11 +4,10 @@ export class Room {
     
     clients: [ClientData, ClientData]
 
-    moves: string[] =  []
+    moves: string[] = []
 
     constructor(public host: ClientData, public roomID: string) {
         this.clients = [host, undefined]
-        
     }
 
 }
