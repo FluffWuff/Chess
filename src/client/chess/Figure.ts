@@ -23,7 +23,7 @@ export class Figure {
             this.figureType = FigureType.BISHOP
         } else if (spriteIndex == 6 || spriteIndex == 7) {
             this.figureMoveType = FigureMoveTypes.KNIGHT
-            this.figureType = FigureType.KING
+            this.figureType = FigureType.KNIGHT
         } else if (spriteIndex == 8 || spriteIndex == 9) {
             this.figureMoveType = FigureMoveTypes.ROOK
             this.figureType = FigureType.ROOK

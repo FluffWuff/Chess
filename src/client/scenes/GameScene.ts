@@ -72,11 +72,11 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
             let diffX = field.relativePosX - this.markedField.relativePosX
             let diffY = field.relativePosY - this.markedField.relativePosY
 
-            if(this.markedField.figure.figureType == FigureType.WHITE_PAWN && diffX == 0 && diffY == -1 && field.figure != null) {
+            if (this.markedField.figure.figureType == FigureType.WHITE_PAWN && diffX == 0 && diffY == -1 && field.figure != null) {
                 isIlegal = true
             }
 
-            if(this.markedField.figure.figureType == FigureType.BLACK_PAWN && diffX == 0 && diffY == 1 && field.figure != null) {
+            if (this.markedField.figure.figureType == FigureType.BLACK_PAWN && diffX == 0 && diffY == 1 && field.figure != null) {
                 isIlegal = true
             }
 
@@ -87,7 +87,7 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
                 return
             }
 
-            if(field.figure != null) {
+            if (field.figure != null) {
                 field.figure.sprite.destroy()
             }
             field.figure = this.markedField.figure
@@ -111,6 +111,9 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
             this.markedField.square.setFillStyle(this.markedField.originalColor)
             if (isSuccessful) {
                 this.markedField.figure = null
+
+                let kingPos = this.getKingPos(!this.playerPiece) //check for other piece
+                this.checkForCheck(kingPos[0], kingPos[1], !this.playerPiece)
 
                 //send move to server
                 this.webSocketController.send({
@@ -145,7 +148,7 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
             let fromField: Field = this.board.fieldList[fromX][fromY]
             let toField: Field = this.board.fieldList[toX][toY]
 
-            if(toField.figure != null) {
+            if (toField.figure != null) {
                 toField.figure.sprite.destroy()
             }
             toField.figure = fromField.figure
@@ -153,7 +156,8 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
             toField.figure.moveFigure(toX, toY)
             console.log("Renderd move by server: " + from + " " + to)
 
-
+            let kingPos = this.getKingPos(this.playerPiece)
+            this.checkForCheck(kingPos[0], kingPos[1], this.playerPiece)
         }
 
         this.whoIsMove = !this.whoIsMove
@@ -164,8 +168,195 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
         }
     }
 
-    checkForCheck() {
-        
+    getKingPos(color: boolean): [number, number] {
+        for (var i = 0; i < 8; i++) {
+            for (var j = 0; j < 8; j++) {
+                let field = this.board.fieldList[i][j]
+                if (field.figure == null) continue
+                if (field.figure.figureType == FigureType.KING && !field.figure.isWhitePiece == color)
+                    return [field.relativePosX, field.relativePosY]
+            }
+        }
+        return [0, 0]
+    }
+
+    // Look at Chess.png to see explanation
+    checkForCheck(kingX: number, kingY: number, color: boolean) {
+        console.log("KingX: " + kingX + " kingY: " + kingY)
+        let checkField: Field = null
+        let checks: Field[] = []
+
+        // -> ^= bis bedingung
+        //Diagonale checks:
+        //1.: -x, -y -> x == 0 || y == 0
+        for (var dX = kingX - 1; dX >= 0; dX--) {
+            for (var dY = kingY - 1; dY >= 0; dY--) {
+                //console.log(dX + " " + dY)
+                checkField = this.board.fieldList[dX][dY]
+                if (checkField.figure == null) continue
+                if ((checkField.figure.figureType == FigureType.QUEEN || checkField.figure.figureType == FigureType.BISHOP) && !checkField.figure.isWhitePiece != color) {
+                    checks.push(checkField)
+                    console.log("1 New Check: " + dX + " " + dY)
+                    break
+                }
+                if (!checkField.figure.isWhitePiece == color) { //field contains same color piece
+                    console.log("1 Same color piece")
+                    break
+                }
+            }
+        }
+        checkField = null
+
+        //2.: +x, -y -> x == 7 || y == 0
+        for (var dX = kingX + 1; dX <= 7; dX++) {
+            for (var dY = kingY - 1; dY >= 0; dY--) {
+                checkField = this.board.fieldList[dX][dY]
+                if (checkField.figure == null) continue
+                if ((checkField.figure.figureType == FigureType.QUEEN || checkField.figure.figureType == FigureType.BISHOP) && !checkField.figure.isWhitePiece != color) {
+                    checks.push(checkField)
+                    console.log("2 New Check: " + dX + " " + dY)
+                    break
+                }
+                if (!checkField.figure.isWhitePiece == color) { //field contains same color piece
+                    console.log("2 Same color piece")
+
+                    break
+                }
+            }
+        }
+        checkField = null
+
+        //3. +x, + y -> x == 7 || y == 7
+        for (var dX = kingX + 1; dX <= 7; dX++) {
+            for (var dY = kingY + 1; dY <= 7; dY++) {
+                checkField = this.board.fieldList[dX][dY]
+                if (checkField.figure == null) continue
+                if ((checkField.figure.figureType == FigureType.QUEEN || checkField.figure.figureType == FigureType.BISHOP) && !checkField.figure.isWhitePiece != color) {
+                    checks.push(checkField)
+                    console.log("3 New Check: " + dX + " " + dY)
+                    break
+                }
+                if (!checkField.figure.isWhitePiece == color) { //field contains same color piece
+                    console.log("3 Same color piece")
+
+                    break
+                }
+            }
+        }
+        checkField = null
+
+        //4. -x, +y -> x == 0 || y == 7
+        for (var dX = kingX - 1; dX >= 0; dX--) {
+            for (var dY = kingY + 1; dY <= 7; dY++) {
+                checkField = this.board.fieldList[dX][dY]
+                if (checkField.figure == null) continue
+                if ((checkField.figure.figureType == FigureType.QUEEN || checkField.figure.figureType == FigureType.BISHOP) && !checkField.figure.isWhitePiece != color) {
+                    checks.push(checkField)
+                    console.log("4 New Check: " + dX + " " + dY)
+                    break
+                }
+                if (!checkField.figure.isWhitePiece == color) { //field contains same color piece
+                    console.log("4 Same color piece " + dX + " " + dY)
+
+                    break
+                }
+            }
+        }
+        checkField = null
+
+        //Horizontaler check:
+        //5.: -x -> x == 0
+        for (var dX = kingX - 1; dX >= 0; dX--) {
+            checkField = this.board.fieldList[dX][kingY]
+            if (checkField.figure == null) continue
+            if ((checkField.figure.figureType == FigureType.QUEEN || checkField.figure.figureType == FigureType.ROOK) && !checkField.figure.isWhitePiece != color) {
+                checks.push(checkField)
+                console.log("5 New Check: " + dX + " " + kingY)
+                break
+            }
+            if (!checkField.figure.isWhitePiece == color) { //field contains same color piece
+                console.log("5 Same color piece")
+
+                break
+            }
+        }
+        checkField = null
+
+        //6.: +x -> x == 7
+        for (var dX = kingX + 1; dX <= 7; dX++) {
+            checkField = this.board.fieldList[dX][kingY]
+            if (checkField.figure == null) continue
+            if ((checkField.figure.figureType == FigureType.QUEEN || checkField.figure.figureType == FigureType.ROOK) && !checkField.figure.isWhitePiece != color) {
+                checks.push(checkField)
+                console.log("6 New Check: " + dX + " " + kingY)
+                break
+            }
+            if (!checkField.figure.isWhitePiece == color) { //field contains same color piece
+                console.log("6 Same color piece")
+
+                break
+            }
+        }
+
+        //Vertikaler check:
+        //7.: -y -> y == 0
+        for (var dY = kingY - 1; dY >= 0; dY--) {
+            checkField = this.board.fieldList[kingX][dY]
+            if (checkField.figure == null) continue
+            if ((checkField.figure.figureType == FigureType.QUEEN || checkField.figure.figureType == FigureType.ROOK) && !checkField.figure.isWhitePiece != color) {
+                checks.push(checkField)
+                console.log("7 New Check: " + kingX + " " + dY)
+                break
+            }
+            if (!checkField.figure.isWhitePiece == color) { //field contains same color piece
+                console.log("7 Same color piece")
+
+                break
+            }
+        }
+        checkField = null
+
+        //8.: +y -> y == 7
+        for (var dY = kingY + 1; dY <= 7; dY++) {
+            checkField = this.board.fieldList[kingX][dY]
+            if (checkField.figure == null) continue
+            if ((checkField.figure.figureType == FigureType.QUEEN || checkField.figure.figureType == FigureType.ROOK) && !checkField.figure.isWhitePiece != color) {
+                checks.push(checkField)
+                console.log("8 New Check: " + kingX + " " + dY)
+                break
+            }
+            if (!checkField.figure.isWhitePiece == color) { //field contains same color piece
+                console.log("8 Same color piece")
+
+                break
+            }
+        }
+        checkField = null
+
+        //Springer check:
+        //9: Alle Springer positionen checken:
+        let knightMoves = [[-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, 1], [-2, -1]]
+        for (var i = 0; i < knightMoves.length; i++) {
+            let knightMove = knightMoves[i]
+            if (kingX + knightMove[0] > 7 || kingX + knightMove[0] < 0 || kingY + knightMove[1] > 7 || kingY + knightMove[1] < 0) {
+                continue
+            }
+            checkField = this.board.fieldList[kingX + knightMove[0]][kingY + knightMove[1]]
+            if (checkField.figure == null) continue
+            if (checkField.figure.figureType == FigureType.KNIGHT && !checkField.figure.isWhitePiece != color) {
+                checks.push(checkField)
+                console.log("9 New Check: " + kingX + knightMove[0] + " " + kingY + knightMove[1])
+                break
+            }
+            if (!checkField.figure.isWhitePiece == color) { //field contains same color piece
+                console.log("9 ame color piece")
+
+                break
+            }
+        }
+        if (checks.length > 0) {
+            console.log(checks)
+        }
     }
 
     checkForCheckMate() {
