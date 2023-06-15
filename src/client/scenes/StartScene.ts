@@ -19,6 +19,8 @@ export class StartScene extends Phaser.Scene {
     create() {
         let text = this.add.text(100, 100, "Chess") 
         
+        jQuery('.Username').show();
+        jQuery('.Room_code').hide();
         
         let caption = this.add.text(100, 300, "Press Enter to start")
         let that = this
@@ -40,8 +42,6 @@ export class StartScene extends Phaser.Scene {
             }
         }, this)
         
-        jQuery('.Username').show();
-        jQuery('.Room_code').hide();
         
     }
     

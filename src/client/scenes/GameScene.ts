@@ -1,7 +1,8 @@
 import { ClientMessageNewClient, ServerMessage } from "../../data/Data.js"
 import { Board, Field } from "../chess/Board.js"
 import { WebSocketListener, WebSocketController } from "../WebSocketController.js"
-import { ServerMessageNewClient, ServerMessageStartingGame } from '../../data/Data';
+import { ServerMessageNewClient, ServerMessageStartingGame } from '../../data/Data.js';
+import { FigureType } from "../chess/Figure.js";
 
 export class GameScene extends Phaser.Scene implements HoverListener, WebSocketListener {
 
@@ -66,11 +67,18 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
                 console.log(1)
                 if (field.figure.isWhitePiece == this.markedField.figure.isWhitePiece) // checks if pieces are same color: false == false or true == true
                     isIlegal = true
-                else {
-                    //schmeißen:
-                }
             }
 
+            let diffX = field.relativePosX - this.markedField.relativePosX
+            let diffY = field.relativePosY - this.markedField.relativePosY
+
+            if(this.markedField.figure.figureType == FigureType.WHITE_PAWN && diffX == 0 && diffY == -1 && field.figure != null) {
+                isIlegal = true
+            }
+
+            if(this.markedField.figure.figureType == FigureType.BLACK_PAWN && diffX == 0 && diffY == 1 && field.figure != null) {
+                isIlegal = true
+            }
 
             if (isIlegal) {
                 field.square.setFillStyle(field.originalColor)
@@ -79,10 +87,11 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
                 return
             }
 
+            if(field.figure != null) {
+                field.figure.sprite.destroy()
+            }
             field.figure = this.markedField.figure
 
-            let diffX = field.relativePosX - this.markedField.relativePosX
-            let diffY = field.relativePosY - this.markedField.relativePosY
 
             //for (var i = 0; i < Math.abs(diffX); i++) {
             //    for (var j = 0; j < Math.abs(diffY); j++) {
@@ -136,10 +145,15 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
             let fromField: Field = this.board.fieldList[fromX][fromY]
             let toField: Field = this.board.fieldList[toX][toY]
 
+            if(toField.figure != null) {
+                toField.figure.sprite.destroy()
+            }
             toField.figure = fromField.figure
             fromField.figure = null
             toField.figure.moveFigure(toX, toY)
             console.log("Renderd move by server: " + from + " " + to)
+
+
         }
 
         this.whoIsMove = !this.whoIsMove
@@ -148,6 +162,18 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
         } else {
             this.whoIsMoveText.setText("Weiß ist am Zug")
         }
+    }
+
+    checkForCheck() {
+        
+    }
+
+    checkForCheckMate() {
+
+    }
+
+    checkForMate() {
+
     }
 
     onOut(field: Field) {

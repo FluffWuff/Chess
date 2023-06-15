@@ -3,6 +3,7 @@ export class Figure {
     sprite: Phaser.GameObjects.Sprite
 
     figureMoveType: number[][]
+    figureType: FigureType
 
     //Indicates how many time the figure was moved
     moveCount = 0
@@ -13,18 +14,25 @@ export class Figure {
         // replace with switch-case
         if (spriteIndex == 0 || spriteIndex == 1) {
             this.figureMoveType = FigureMoveTypes.KING
+            this.figureType = FigureType.KING
         } else if (spriteIndex == 2 || spriteIndex == 3) {
             this.figureMoveType = FigureMoveTypes.QUEEN
+            this.figureType = FigureType.QUEEN
         } else if (spriteIndex == 4 || spriteIndex == 5) {
             this.figureMoveType = FigureMoveTypes.BISHOP
+            this.figureType = FigureType.BISHOP
         } else if (spriteIndex == 6 || spriteIndex == 7) {
             this.figureMoveType = FigureMoveTypes.KNIGHT
+            this.figureType = FigureType.KING
         } else if (spriteIndex == 8 || spriteIndex == 9) {
             this.figureMoveType = FigureMoveTypes.ROOK
+            this.figureType = FigureType.ROOK
         } else if (spriteIndex == 10) {
             this.figureMoveType = FigureMoveTypes.WHITE_PAWN
+            this.figureType = FigureType.WHITE_PAWN
         } else if (spriteIndex == 11) {
             this.figureMoveType = FigureMoveTypes.BLACK_PAWN
+            this.figureType = FigureType.BLACK_PAWN
         }
         this.sprite = scene.add.sprite(x, y, "figures", spriteIndex)
         this.sprite.setDisplayOrigin(0, 0).setDisplaySize(128, 128)
@@ -37,7 +45,6 @@ export class Figure {
         let diffY = boardY - this.posY
         //check if difference is legal
         let isLegal = false
-
 
         for (var i = 0; i < this.figureMoveType.length; i++) {
             let moveOrder = this.figureMoveType[i]
@@ -66,9 +73,10 @@ export class Figure {
 
         this.moveCount++
         if (this.figureMoveType == FigureMoveTypes.WHITE_PAWN || this.figureMoveType == FigureMoveTypes.BLACK_PAWN) {
-            if (diffY == 2 || diffY == -2 || this.moveCount == 1) {
-                //Remove the first opening move
-                this.figureMoveType.pop()
+            if ((diffY == 2 || diffY == -2) && this.moveCount > 1) {
+                //Remove the first opening mov
+                console.log("hier")
+                return false
             }
         }
         return true
@@ -95,4 +103,14 @@ export class FigureMoveTypes {
     static BISHOP = [[-1, 1], [1, 1], [1, -1], [-1, -1]] //all other ways will be multiplied
     static QUEEN = [[-1, -1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]] //all other ways will be multiplied
 
+}
+
+export enum FigureType {
+    KING,
+    QUEEN,
+    ROOK,
+    BISHOP,
+    KNIGHT,
+    BLACK_PAWN,
+    WHITE_PAWN
 }
