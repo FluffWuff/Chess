@@ -15,6 +15,9 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
     whoIsMoveText: Phaser.GameObjects.Text
     whoIsMove: boolean = false
     playerPiece: boolean
+    statusMessage: Phaser.GameObjects.Text
+
+    isInCheck: [boolean, boolean] = [false, false]
 
     constructor() {
         super({
@@ -355,6 +358,15 @@ export class GameScene extends Phaser.Scene implements HoverListener, WebSocketL
             }
         }
         if (checks.length > 0) {
+            let colorText = ""
+            if(color) colorText = "Schwarz"
+            else colorText = "Weiß"
+            if(this.statusMessage == null) {
+                this.statusMessage = this.add.text(100, 300, "Schach für " + colorText)
+            } else {
+                this.statusMessage.setText("Schach für " + colorText)
+            }
+            this.isInCheck = [true, color]
             console.log(checks)
         }
     }
